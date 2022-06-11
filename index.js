@@ -35,7 +35,7 @@ class Sprite {
 
         // attack box
         if (this.isAttacking) {
-            c.fillStyle = "green"
+            c.fillStyle = "red"
             c.fillRect(
                 this.attackBox.position.x,
                 this.attackBox.position.y,
@@ -65,8 +65,6 @@ class Sprite {
         }, 100);
     }
 };
-
-
 
 const player = new Sprite({
     position: {
@@ -99,8 +97,6 @@ const enemy = new Sprite({
         y: 0
     }
 });
-
-
 
 console.log(player)
 
@@ -172,13 +168,41 @@ function animate() {
         player.health -= 20
         document.querySelector("#playerHealth").style.width = player.health + "%"
     };
-
+    // end game based on health
+    if (enemy.health <= 0 || player.health <= 0) {
+        determineWinner({ player, enemy, timerId })
+    }
 };
 
+function determineWinner({ player, enemy, timerId }) {
+    clearTimeout(timerId)
+    document.querySelector("#displayText").style.display = "flex"
+    if (player.health === enemy.health) {
+        document.querySelector("#displayText").innerHTML = "Tie"
+    } else if (player.health > enemy.health) {
+        document.querySelector("#displayText").innerHTML = "Player 1 Wins!"
+    } else if (enemy.health > player.health) {
+        document.querySelector("#displayText").innerHTML = "Player 2 Wins!"
+    }
+}
+
+let timer = 60
+let timerId
+function decTimer() {
+    if (timer > 0) {
+        timerId = setTimeout(decTimer, 1000)
+        timer--
+        document.querySelector("#timer").innerHTML = timer
+    }
+
+    if (timer === 0) {
+        determineWinner({ player, enemy, timerId })
+    }
+}
+decTimer()
 animate()
 
 window.addEventListener("keydown", (event) => {
-    console.log(event.key)
     switch (event.key) {
         case "d":
             keys.d.pressed = true
